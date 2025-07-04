@@ -1,0 +1,9 @@
+&spi1 {
+    status = "okay";
+
+    bgt60: bgt60@0 {
+        compatible = "infineon,bgt60";
+        reg = <0>;
+        spi-max-frequency = <1000000>;
+    };
+};

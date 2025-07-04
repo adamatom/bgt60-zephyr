@@ -1,0 +1,55 @@
+# Copyright (c) 2025 Adam Labbe <adamlabbe@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig BGT60_RADAR
+	bool "BGT60 radar sensor"
+	default y
+	select SPI
+	select SPI_RTIO
+	select SENSOR_ASYNC_API
+	help
+	  Enable driver for the Infineon BGT60 radar sensor.
+
+if BGT60_RADAR
+
+# config BGT60_RADAR_STREAM
+# 	bool "Use FIFO to stream data"
+# 	default n
+# 	select RTIO_WORKQ
+# 	help
+# 	  Enable streaming mode for the BGT60 sensor.
+
+config BGT60_RADAR_VERIFY_WRITES
+	bool "Verify register writes by reading back (for debugging)"
+	default n
+	help
+	  If enabled, after each register write during the initialization sequence,
+	  the driver will read back the register to verify its content.
+	  This adds significant overhead and logging, primarily for debugging
+	  the initialization process.
+
+config BGT60_RADAR_SENSOR_DEFAULT_FIFO_BLOCKS
+	int "Default number of FIFO blocks to read per measurement"
+	default 2048
+	range 1 2048
+	help
+	  Specifies the default number of 3-byte blocks to read from the
+	  sensor's FIFO in a single sensor_read operation. Each block yields
+	  two 12-bit samples. So, 2048 blocks = 4096 samples.
+	  This value can be overridden at runtime via SENSOR_ATTR_CONFIGURATION.
+
+config BGT60_RADAR_FIFO_POLL_TIMEOUT_MS
+	int "Timeout in milliseconds for waiting for FIFO data"
+	default 100
+	help
+	  Maximum time the driver will poll the FSTAT register waiting for
+	  the FIFO to indicate it's not empty before giving up.
+
+config BGT60_RADAR_FIFO_POLL_INTERVAL_MS
+	int "Polling interval in milliseconds for FIFO data check"
+	default 10
+	help
+	  Time interval between checks of the FSTAT register when waiting
+	  for FIFO data.
+
+endif # BGT60_RADAR
